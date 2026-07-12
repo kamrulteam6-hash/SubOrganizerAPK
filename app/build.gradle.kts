@@ -1,6 +1,9 @@
+// AGP 9.x has built-in Kotlin support, so the separate kotlin-android plugin is
+// deliberately NOT applied here — applying both trips Kotlin's
+// AgpWithBuiltInKotlinAppliedCheck and fails the build. compose/serialization are
+// compiler plugins that hook into AGP's built-in Kotlin compilation directly.
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -37,9 +40,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
 }
 
