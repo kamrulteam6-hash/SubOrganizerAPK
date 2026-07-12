@@ -42,21 +42,15 @@ fun MerchantAvatar(
     val theme = categoryTheme(category)
     val fallbackBrush = Brush.linearGradient(listOf(theme.gradientStart, theme.gradientEnd))
 
+    // Clearbit's public logo API is dead (DNS no longer resolves) — Google's favicon
+    // service is the only remaining source, with the letter tile as final fallback.
     SubcomposeAsyncImage(
-        model = "https://logo.clearbit.com/$domain",
+        model = "https://www.google.com/s2/favicons?sz=128&domain=$domain",
         contentDescription = merchantName,
         modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(size / 3.5f)),
-        error = {
-            SubcomposeAsyncImage(
-                model = "https://www.google.com/s2/favicons?sz=128&domain=$domain",
-                contentDescription = merchantName,
-                modifier = Modifier.size(size),
-                error = { InitialFallback(merchantName, fallbackBrush, size) },
-                loading = { InitialFallback(merchantName, fallbackBrush, size) },
-            )
-        },
+        error = { InitialFallback(merchantName, fallbackBrush, size) },
         loading = { InitialFallback(merchantName, fallbackBrush, size) },
     )
 }

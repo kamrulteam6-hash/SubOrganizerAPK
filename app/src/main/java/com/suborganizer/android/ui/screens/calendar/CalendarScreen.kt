@@ -151,8 +151,10 @@ private fun DayCell(day: Int, subs: List<Subscription>, isSelected: Boolean, onC
             val theme = categoryTheme(subs.first().category)
             val domain = subs.first().merchantDomain
                 ?: (subs.first().merchantName.lowercase().replace(Regex("[^a-z0-9]"), "") + ".com")
+            // Clearbit's public logo API is dead (DNS no longer resolves) — Google's
+            // favicon service is the only remaining source here.
             SubcomposeAsyncImage(
-                model = "https://logo.clearbit.com/$domain",
+                model = "https://www.google.com/s2/favicons?sz=128&domain=$domain",
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
                 error = {
