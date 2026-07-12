@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SubOrganizerTheme {
-                SubOrganizerApp()
+                SubOrganizerRoot()
             }
         }
     }
@@ -78,8 +78,10 @@ private val bottomTabs = listOf(
     BottomTab(Destinations.SETTINGS, "Settings", Icons.Default.Settings),
 )
 
+// Named ...Root, not ...App: a composable called SubOrganizerApp() would be ambiguous
+// with the SubOrganizerApp Application class constructor in this same package.
 @Composable
-private fun SubOrganizerApp() {
+private fun SubOrganizerRoot() {
     val navController = rememberNavController()
     val authRepository = remember { AuthRepository() }
     var loggedIn by remember { mutableStateOf(authRepository.currentUserId != null) }

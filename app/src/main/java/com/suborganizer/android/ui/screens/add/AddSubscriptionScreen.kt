@@ -116,6 +116,7 @@ fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit) {
     }
 }
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 private fun Dropdown(label: String, options: List<String>, selected: String, onSelected: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
@@ -128,7 +129,9 @@ private fun Dropdown(label: String, options: List<String>, selected: String, onS
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier.fillMaxWidth().menuAnchor(androidx.compose.material3.MenuAnchorType.PrimaryNotEditable),
         )
-        androidx.compose.material3.ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        // Unqualified on purpose: ExposedDropdownMenu is a member of ExposedDropdownMenuBoxScope,
+        // not a top-level material3 function — fully qualifying it fails to resolve.
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             options.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option.replaceFirstChar { it.uppercase() }) },
