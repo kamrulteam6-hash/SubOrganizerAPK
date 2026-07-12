@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base platform theme; actual UI theming lives in Compose (ui/theme). -->
+    <style name="Theme.SubOrganizer" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#06070C</item>
+        <item name="android:windowBackground">#06070C</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">#06070C</item>
+    </style>
+</resources>
