@@ -134,7 +134,12 @@ private fun BrandMark() {
             .background(BrandGradient, RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        Text("S", color = Color.White, style = MaterialTheme.typography.headlineMedium)
+        Icon(
+            painter = androidx.compose.ui.res.painterResource(com.suborganizer.android.R.drawable.ic_shield_mark),
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(31.dp),
+        )
     }
 }
 
