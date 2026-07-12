@@ -52,7 +52,10 @@ class NotificationCollectorService : NotificationListenerService() {
         val draft = DetectionEngine.analyze(combined, DraftSource.NOTIFICATION, appLabel) ?: return
 
         scope.launch {
-            draftRepository.addIfNew(draft)
+            val added = draftRepository.addIfNew(draft)
+            if (added != null) {
+                DraftNotifier.notify(applicationContext, added)
+            }
         }
     }
 

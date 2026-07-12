@@ -32,7 +32,10 @@ class SmsReceiver : BroadcastReceiver() {
             try {
                 val draft = DetectionEngine.analyze(body, DraftSource.SMS, sender)
                 if (draft != null) {
-                    DraftRepository(appContext).addIfNew(draft)
+                    val added = DraftRepository(appContext).addIfNew(draft)
+                    if (added != null) {
+                        DraftNotifier.notify(appContext, added)
+                    }
                 }
             } finally {
                 pendingResult.finish()

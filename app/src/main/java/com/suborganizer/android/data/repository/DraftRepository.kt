@@ -28,15 +28,19 @@ class DraftRepository(private val context: Context) {
         runCatching { json.decodeFromString<List<DraftSubscription>>(raw) }.getOrDefault(emptyList())
     }
 
-    suspend fun addIfNew(draft: DraftSubscription) {
+    /** Returns the saved draft, or null if it was a duplicate and nothing was added. */
+    suspend fun addIfNew(draft: DraftSubscription): DraftSubscription? {
         val current = drafts.first()
         val exists = current.any {
             (it.merchantDomain != null && it.merchantDomain == draft.merchantDomain) ||
                 it.merchantName.equals(draft.merchantName, ignoreCase = true)
         }
-        if (exists) return
+        if (exists) return null
         save(current + draft)
+        return draft
     }
+
+    suspend fun getById(id: String): DraftSubscription? = drafts.first().find { it.id == id }
 
     suspend fun remove(id: String) {
         save(drafts.first().filterNot { it.id == id })

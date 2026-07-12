@@ -67,5 +67,23 @@
             </intent-filter>
         </receiver>
 
+        <!-- Handles the Approve/Discard buttons on a "detected a charge" notification.
+             Only ever triggered by our own explicit PendingIntent, never externally. -->
+        <receiver
+            android:name=".detection.DraftActionReceiver"
+            android:exported="false" />
+
+        <!-- Home-screen widget: next 3 upcoming subscription charges. -->
+        <receiver
+            android:name=".widget.RenewalWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_renewals_info" />
+        </receiver>
+
     </application>
 </manifest>

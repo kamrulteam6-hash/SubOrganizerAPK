@@ -1,6 +1,9 @@
 package com.suborganizer.android.ui
 
 import android.app.Application
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.suborganizer.android.data.model.DraftSubscription
@@ -9,6 +12,7 @@ import com.suborganizer.android.data.model.Subscription
 import com.suborganizer.android.data.repository.AuthRepository
 import com.suborganizer.android.data.repository.DraftRepository
 import com.suborganizer.android.data.repository.SubscriptionRepository
+import com.suborganizer.android.widget.RenewalWidgetProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -46,9 +50,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val profile = subscriptionRepository.ensureProfile(userId, authRepository.currentUserEmail)
                 val subs = subscriptionRepository.getSubscriptions(userId)
                 _state.value = _state.value.copy(loading = false, subscriptions = subs, profile = profile)
+                requestWidgetUpdate()
             } catch (e: Exception) {
                 _state.value = _state.value.copy(loading = false, error = e.message ?: "Failed to load your subscriptions.")
             }
+        }
+    }
+
+    // Pushes a live refresh to any placed home-screen widgets right after data changes,
+    // instead of leaving them to catch up on the next system-scheduled update (which can
+    // be hours away — updatePeriodMillis has an OS-enforced 30-minute floor).
+    private fun requestWidgetUpdate() {
+        val context = getApplication<Application>().applicationContext
+        val manager = AppWidgetManager.getInstance(context)
+        val ids = manager.getAppWidgetIds(ComponentName(context, RenewalWidgetProvider::class.java))
+        if (ids.isNotEmpty()) {
+            val intent = Intent(context, RenewalWidgetProvider::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            }
+            context.sendBroadcast(intent)
         }
     }
 
