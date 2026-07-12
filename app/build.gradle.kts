@@ -10,7 +10,8 @@ plugins {
 
 android {
     namespace = "com.suborganizer.android"
-    compileSdk = 36
+    // lifecycle 2.11.0 AARs require compiling against API 37+.
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.suborganizer.android"
