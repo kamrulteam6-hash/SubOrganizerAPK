@@ -27,8 +27,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.suborganizer.android.ui.MainViewModel
 import com.suborganizer.android.ui.components.GlassCard
+import com.suborganizer.android.ui.components.UpgradeToProButton
 import com.suborganizer.android.ui.theme.Emerald
 import com.suborganizer.android.ui.theme.Muted
 import com.suborganizer.android.ui.theme.Rose
@@ -36,6 +38,8 @@ import com.suborganizer.android.ui.theme.Rose
 @Composable
 fun SettingsScreen(mainViewModel: MainViewModel, onSignedOut: () -> Unit) {
     val context = LocalContext.current
+    val state by mainViewModel.state.collectAsStateWithLifecycle()
+    val isFreePlan = state.profile?.plan.isNullOrBlank() || state.profile?.plan == "free"
 
     var notificationAccessGranted by remember {
         mutableStateOf(NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName))
@@ -60,6 +64,29 @@ fun SettingsScreen(mainViewModel: MainViewModel, onSignedOut: () -> Unit) {
                 Spacer(Modifier.height(12.dp))
                 TextButton(onClick = { mainViewModel.signOut(onSignedOut) }) {
                     Text("Sign Out", color = Rose)
+                }
+            }
+        }
+
+        if (isFreePlan) {
+            Spacer(Modifier.height(24.dp))
+            Text("PLAN", style = MaterialTheme.typography.labelMedium, color = Muted)
+            Spacer(Modifier.height(8.dp))
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Column {
+                    Text(
+                        "You're on the Free plan — tracking ${state.subscriptions.size} of 3 subscriptions.",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "Upgrade on the website for unlimited subscriptions, price-hike alerts, and family sharing.",
+                        color = Muted,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    UpgradeToProButton(modifier = Modifier.fillMaxWidth())
                 }
             }
         }

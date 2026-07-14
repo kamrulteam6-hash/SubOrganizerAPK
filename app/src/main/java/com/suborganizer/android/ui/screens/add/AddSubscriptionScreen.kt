@@ -23,10 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.suborganizer.android.data.model.Subscription
 import com.suborganizer.android.ui.MainViewModel
+import com.suborganizer.android.ui.components.GlassCard
 import com.suborganizer.android.ui.components.GradientButton
+import com.suborganizer.android.ui.components.UpgradeToProButton
+import com.suborganizer.android.ui.theme.Amber
 import com.suborganizer.android.ui.theme.Rose
+import com.suborganizer.android.util.FREE_PLAN_LIMIT
 import com.suborganizer.android.util.Format
 
 private val CATEGORIES = listOf("streaming", "software", "music", "news", "fitness", "gaming", "cloud", "other")
@@ -34,6 +39,10 @@ private val CYCLES = listOf("monthly", "yearly", "weekly", "quarterly")
 
 @Composable
 fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit) {
+    val state by mainViewModel.state.collectAsStateWithLifecycle()
+    val isFreePlan = state.profile?.plan.isNullOrBlank() || state.profile?.plan == "free"
+    val atLimit = isFreePlan && state.subscriptions.size >= FREE_PLAN_LIMIT
+
     var name by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
     var category by remember { mutableStateOf(CATEGORIES.last()) }
@@ -50,6 +59,23 @@ fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit) {
     ) {
         Text("Add Subscription", style = MaterialTheme.typography.headlineMedium, color = Color.White)
         Spacer(Modifier.height(20.dp))
+
+        if (atLimit) {
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Column {
+                    Text("Free plan limit reached", color = Amber, style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        "You're tracking $FREE_PLAN_LIMIT of $FREE_PLAN_LIMIT subscriptions on the Free plan. Upgrade to Pro to track unlimited subscriptions.",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(14.dp))
+                    UpgradeToProButton(modifier = Modifier.fillMaxWidth())
+                }
+            }
+            return@Column
+        }
 
         OutlinedTextField(
             value = name,

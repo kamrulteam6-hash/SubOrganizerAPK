@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.suborganizer.android.data.model.Subscription
 import com.suborganizer.android.ui.MainViewModel
+import com.suborganizer.android.ui.components.FreePlanBadge
 import com.suborganizer.android.ui.components.GlassCard
 import com.suborganizer.android.ui.components.MerchantAvatar
 import com.suborganizer.android.ui.theme.AmberSoft
@@ -56,13 +57,23 @@ fun DashboardScreen(
         d != null && d in 0..30
     }.sortedBy { it.nextRenewalDate }
 
+    val isFreePlan = state.profile?.plan.isNullOrBlank() || state.profile?.plan == "free"
+
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "Dashboard",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.White,
-            modifier = Modifier.padding(20.dp),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Dashboard",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White,
+            )
+            if (isFreePlan) {
+                FreePlanBadge(trackedCount = state.subscriptions.size)
+            }
+        }
 
         if (state.loading) {
             Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {

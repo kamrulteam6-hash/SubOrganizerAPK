@@ -14,14 +14,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.suborganizer.android.ui.theme.Amber
+import com.suborganizer.android.ui.theme.AmberSoft
 import com.suborganizer.android.ui.theme.BorderDark
 import com.suborganizer.android.ui.theme.FuchsiaAccent
 import com.suborganizer.android.ui.theme.IndigoAccent
 import com.suborganizer.android.ui.theme.SurfaceRaised
+import com.suborganizer.android.util.FREE_PLAN_LIMIT
+import com.suborganizer.android.util.PRICING_URL
+import com.suborganizer.android.util.openUrl
 
 val BrandGradient = Brush.linearGradient(listOf(IndigoAccent, FuchsiaAccent))
 
@@ -84,5 +94,48 @@ fun CategoryBadge(category: String) {
             style = MaterialTheme.typography.labelSmall,
             color = Color.White,
         )
+    }
+}
+
+/** "Free plan · X of 3 tracked" pill — mirrors the badge on the web dashboard header. */
+@Composable
+fun FreePlanBadge(trackedCount: Int, modifier: Modifier = Modifier, limit: Int = FREE_PLAN_LIMIT) {
+    val context = LocalContext.current
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(AmberSoft.copy(alpha = 0.15f))
+            .clickable { openUrl(context, PRICING_URL) }
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+    ) {
+        Text(
+            text = "Free plan · $trackedCount of $limit tracked",
+            style = MaterialTheme.typography.labelSmall,
+            color = Amber,
+        )
+    }
+}
+
+/** Every upgrade path in the app funnels here — checkout only ever happens on the website. */
+@Composable
+fun UpgradeToProButton(modifier: Modifier = Modifier, text: String = "Upgrade to Pro") {
+    val context = LocalContext.current
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(BrandGradient)
+            .clickable { openUrl(context, PRICING_URL) }
+            .padding(vertical = 14.dp, horizontal = 20.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.WorkspacePremium, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+            Text(
+                text = text.uppercase(),
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
     }
 }
