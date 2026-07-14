@@ -44,6 +44,7 @@ fun DashboardScreen(
     mainViewModel: MainViewModel,
     onOpenCalendar: () -> Unit = {},
     onOpenAnalytics: () -> Unit = {},
+    onOpenPricing: () -> Unit = {},
 ) {
     val state by mainViewModel.state.collectAsStateWithLifecycle()
     val currency = state.profile?.settings?.currency ?: "USD"
@@ -71,7 +72,7 @@ fun DashboardScreen(
                 color = Color.White,
             )
             if (isFreePlan) {
-                FreePlanBadge(trackedCount = state.subscriptions.size)
+                FreePlanBadge(trackedCount = state.subscriptions.size, onClick = onOpenPricing)
             }
         }
 

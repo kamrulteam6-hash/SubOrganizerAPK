@@ -36,7 +36,7 @@ import com.suborganizer.android.ui.theme.Muted
 import com.suborganizer.android.ui.theme.Rose
 
 @Composable
-fun SettingsScreen(mainViewModel: MainViewModel, onSignedOut: () -> Unit) {
+fun SettingsScreen(mainViewModel: MainViewModel, onSignedOut: () -> Unit, onOpenPricing: () -> Unit = {}) {
     val context = LocalContext.current
     val state by mainViewModel.state.collectAsStateWithLifecycle()
     val isFreePlan = state.profile?.plan.isNullOrBlank() || state.profile?.plan == "free"
@@ -86,7 +86,7 @@ fun SettingsScreen(mainViewModel: MainViewModel, onSignedOut: () -> Unit) {
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Spacer(Modifier.height(12.dp))
-                    UpgradeToProButton(modifier = Modifier.fillMaxWidth())
+                    UpgradeToProButton(modifier = Modifier.fillMaxWidth(), onClick = onOpenPricing)
                 }
             }
         }

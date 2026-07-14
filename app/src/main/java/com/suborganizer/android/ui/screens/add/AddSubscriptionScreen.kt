@@ -38,7 +38,7 @@ private val CATEGORIES = listOf("streaming", "software", "music", "news", "fitne
 private val CYCLES = listOf("monthly", "yearly", "weekly", "quarterly")
 
 @Composable
-fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit) {
+fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit, onOpenPricing: () -> Unit = {}) {
     val state by mainViewModel.state.collectAsStateWithLifecycle()
     val isFreePlan = state.profile?.plan.isNullOrBlank() || state.profile?.plan == "free"
     val atLimit = isFreePlan && state.subscriptions.size >= FREE_PLAN_LIMIT
@@ -71,7 +71,7 @@ fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit) {
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Spacer(Modifier.height(14.dp))
-                    UpgradeToProButton(modifier = Modifier.fillMaxWidth())
+                    UpgradeToProButton(modifier = Modifier.fillMaxWidth(), onClick = onOpenPricing)
                 }
             }
             return@Column

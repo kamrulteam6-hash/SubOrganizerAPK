@@ -9,4 +9,5 @@ object Destinations {
     const val SETTINGS = "settings"
     const val CALENDAR = "calendar"
     const val ANALYTICS = "analytics"
+    const val PRICING = "pricing"
 }

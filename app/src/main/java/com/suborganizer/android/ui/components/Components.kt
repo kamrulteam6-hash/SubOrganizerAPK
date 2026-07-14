@@ -97,15 +97,19 @@ fun CategoryBadge(category: String) {
     }
 }
 
-/** "Free plan · X of 3 tracked" pill — mirrors the badge on the web dashboard header. */
+/**
+ * "Free plan · X of 3 tracked" pill — mirrors the badge on the web dashboard header.
+ * Defaults to opening the website's pricing page directly; pass onClick (e.g. to
+ * navigate to the in-app Pricing screen instead) when the caller has nav access.
+ */
 @Composable
-fun FreePlanBadge(trackedCount: Int, modifier: Modifier = Modifier, limit: Int = FREE_PLAN_LIMIT) {
+fun FreePlanBadge(trackedCount: Int, modifier: Modifier = Modifier, limit: Int = FREE_PLAN_LIMIT, onClick: (() -> Unit)? = null) {
     val context = LocalContext.current
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(999.dp))
             .background(AmberSoft.copy(alpha = 0.15f))
-            .clickable { openUrl(context, PRICING_URL) }
+            .clickable { (onClick ?: { openUrl(context, PRICING_URL) })() }
             .padding(horizontal = 10.dp, vertical = 5.dp),
     ) {
         Text(
@@ -116,15 +120,20 @@ fun FreePlanBadge(trackedCount: Int, modifier: Modifier = Modifier, limit: Int =
     }
 }
 
-/** Every upgrade path in the app funnels here — checkout only ever happens on the website. */
+/**
+ * Defaults to opening the website's pricing page directly — used as-is inside the
+ * in-app Pricing screen, since that's the actual conversion exit point. Entry-point
+ * callers elsewhere (Dashboard, Settings, the Add-limit block) pass onClick to
+ * navigate to the Pricing screen instead, so people see the plan comparison first.
+ */
 @Composable
-fun UpgradeToProButton(modifier: Modifier = Modifier, text: String = "Upgrade to Pro") {
+fun UpgradeToProButton(modifier: Modifier = Modifier, text: String = "Upgrade to Pro", onClick: (() -> Unit)? = null) {
     val context = LocalContext.current
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
             .background(BrandGradient)
-            .clickable { openUrl(context, PRICING_URL) }
+            .clickable { (onClick ?: { openUrl(context, PRICING_URL) })() }
             .padding(vertical = 14.dp, horizontal = 20.dp),
         contentAlignment = Alignment.Center,
     ) {

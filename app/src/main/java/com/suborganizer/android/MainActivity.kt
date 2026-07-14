@@ -46,6 +46,7 @@ import com.suborganizer.android.ui.screens.analytics.AnalyticsScreen
 import com.suborganizer.android.ui.screens.auth.LoginScreen
 import com.suborganizer.android.ui.screens.calendar.CalendarScreen
 import com.suborganizer.android.ui.screens.dashboard.DashboardScreen
+import com.suborganizer.android.ui.screens.pricing.PricingScreen
 import com.suborganizer.android.ui.screens.review.ReviewScreen
 import com.suborganizer.android.ui.screens.settings.SettingsScreen
 import com.suborganizer.android.ui.screens.subscriptions.SubscriptionsScreen
@@ -158,21 +159,27 @@ private fun SubOrganizerRoot() {
                         mainViewModel = mainViewModel,
                         onOpenCalendar = { navController.navigate(Destinations.CALENDAR) },
                         onOpenAnalytics = { navController.navigate(Destinations.ANALYTICS) },
+                        onOpenPricing = { navController.navigate(Destinations.PRICING) },
                     )
                 }
                 composable(Destinations.SUBSCRIPTIONS) { SubscriptionsScreen(mainViewModel) }
                 composable(Destinations.REVIEW) { ReviewScreen(mainViewModel) }
                 composable(Destinations.CALENDAR) { CalendarScreen(mainViewModel) }
                 composable(Destinations.ANALYTICS) { AnalyticsScreen(mainViewModel) }
+                composable(Destinations.PRICING) { PricingScreen() }
                 composable(Destinations.ADD) {
-                    AddSubscriptionScreen(mainViewModel) {
-                        navController.popBackStack()
-                    }
+                    AddSubscriptionScreen(
+                        mainViewModel = mainViewModel,
+                        onSaved = { navController.popBackStack() },
+                        onOpenPricing = { navController.navigate(Destinations.PRICING) },
+                    )
                 }
                 composable(Destinations.SETTINGS) {
-                    SettingsScreen(mainViewModel) {
-                        loggedIn = false
-                    }
+                    SettingsScreen(
+                        mainViewModel = mainViewModel,
+                        onSignedOut = { loggedIn = false },
+                        onOpenPricing = { navController.navigate(Destinations.PRICING) },
+                    )
                 }
             }
         }
