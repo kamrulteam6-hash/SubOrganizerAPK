@@ -12,6 +12,8 @@ import com.suborganizer.android.data.model.Subscription
 import com.suborganizer.android.data.repository.AuthRepository
 import com.suborganizer.android.data.repository.DraftRepository
 import com.suborganizer.android.data.repository.SubscriptionRepository
+import com.suborganizer.android.detection.UpgradeNotifier
+import com.suborganizer.android.util.FREE_PLAN_LIMIT
 import com.suborganizer.android.widget.RenewalWidgetProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,15 +47,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun refresh() {
         val userId = authRepository.currentUserId ?: return
         _state.value = _state.value.copy(loading = true, error = null)
-        viewModelScope.launch {
-            try {
-                val profile = subscriptionRepository.ensureProfile(userId, authRepository.currentUserEmail)
-                val subs = subscriptionRepository.getSubscriptions(userId)
-                _state.value = _state.value.copy(loading = false, subscriptions = subs, profile = profile)
-                requestWidgetUpdate()
-            } catch (e: Exception) {
-                _state.value = _state.value.copy(loading = false, error = e.message ?: "Failed to load your subscriptions.")
-            }
+        viewModelScope.launch { refreshSuspend(userId) }
+    }
+
+    // Extracted so callers already inside a coroutine (like addSubscription) can await
+    // the reload directly instead of firing a detached coroutine via refresh() and
+    // reading _state.value before it's actually updated.
+    private suspend fun refreshSuspend(userId: String) {
+        try {
+            val profile = subscriptionRepository.ensureProfile(userId, authRepository.currentUserEmail)
+            val subs = subscriptionRepository.getSubscriptions(userId)
+            _state.value = _state.value.copy(loading = false, subscriptions = subs, profile = profile)
+            requestWidgetUpdate()
+        } catch (e: Exception) {
+            _state.value = _state.value.copy(loading = false, error = e.message ?: "Failed to load your subscriptions.")
         }
     }
 
@@ -78,11 +85,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 subscriptionRepository.addSubscription(subscription.copy(userId = userId))
-                refresh()
+                refreshSuspend(userId)
+                notifyIfJustHitFreeLimit()
                 onDone(Result.success(Unit))
             } catch (e: Exception) {
                 onDone(Result.failure(e))
             }
+        }
+    }
+
+    // Fires once, right as a free-plan user's count crosses into the cap — refreshSuspend()
+    // has already repopulated _state.value by the time this runs, so this only ever
+    // sees the count settle exactly at the limit the one time it's newly reached.
+    private fun notifyIfJustHitFreeLimit() {
+        val current = _state.value
+        val isFreePlan = current.profile?.plan.isNullOrBlank() || current.profile?.plan == "free"
+        if (isFreePlan && current.subscriptions.size == FREE_PLAN_LIMIT) {
+            UpgradeNotifier.notify(getApplication<Application>().applicationContext)
         }
     }
 
