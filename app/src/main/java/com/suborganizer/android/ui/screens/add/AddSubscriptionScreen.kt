@@ -48,6 +48,7 @@ fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit, onO
     var category by remember { mutableStateOf(CATEGORIES.last()) }
     var cycle by remember { mutableStateOf(CYCLES.first()) }
     var isTrial by remember { mutableStateOf(false) }
+    var trialDays by remember { mutableStateOf("7") }
     var saving by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -103,6 +104,19 @@ fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit, onO
             Text("Currently a free trial?", color = Color.White, modifier = Modifier.padding(top = 12.dp).weight(1f))
             androidx.compose.material3.Switch(checked = isTrial, onCheckedChange = { isTrial = it })
         }
+        if (isTrial) {
+            Spacer(Modifier.height(12.dp))
+            // Trials range from 24 hours to 30+ days — this used to be hardcoded to
+            // exactly 7 regardless of the real length, which threw reminder timing off
+            // by however many days the actual trial differed from that guess.
+            OutlinedTextField(
+                value = trialDays,
+                onValueChange = { v -> if (v.all { it.isDigit() } && v.length <= 3) trialDays = v },
+                label = { Text("Trial length (days) — use 1 for a 24-hour trial") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
         error?.let {
             Spacer(Modifier.height(8.dp))
@@ -118,7 +132,7 @@ fun AddSubscriptionScreen(mainViewModel: MainViewModel, onSaved: () -> Unit, onO
                 val amt = amount.toDoubleOrNull() ?: return@GradientButton
                 saving = true
                 error = null
-                val nextDate = Format.todayPlus(if (isTrial) 7 else 30)
+                val nextDate = Format.todayPlus(if (isTrial) (trialDays.toIntOrNull()?.coerceAtLeast(1) ?: 7) else 30)
                 mainViewModel.addSubscription(
                     Subscription(
                         merchantName = name,
