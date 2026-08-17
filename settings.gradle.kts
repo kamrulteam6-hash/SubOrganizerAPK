@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SubOrganizer"
+rootProject.name = "Sub Planner"
 include(":app")

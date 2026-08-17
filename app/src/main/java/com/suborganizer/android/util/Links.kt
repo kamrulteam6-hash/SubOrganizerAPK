@@ -8,7 +8,7 @@ import android.net.Uri
 const val FREE_PLAN_LIMIT = 3
 
 /** Anchors the pricing section on the marketing site — checkout itself only ever happens there. */
-const val PRICING_URL = "https://suborganizer.app/#pricing"
+const val PRICING_URL = "https://subplanner.com/#pricing"
 
 fun openUrl(context: Context, url: String) {
     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))

@@ -95,7 +95,7 @@ fun SettingsScreen(mainViewModel: MainViewModel, onSignedOut: () -> Unit, onOpen
         Text("SMART COLLECTION", style = MaterialTheme.typography.labelMedium, color = Muted)
         Spacer(Modifier.height(4.dp))
         Text(
-            "SubOrganizer can watch for subscription charges in notifications and messages, entirely on this device. Nothing is saved until you approve it in Review.",
+            "Sub Planner can watch for subscription charges in notifications and messages, entirely on this device. Nothing is saved until you approve it in Review.",
             color = Muted,
             style = MaterialTheme.typography.bodyMedium,
         )

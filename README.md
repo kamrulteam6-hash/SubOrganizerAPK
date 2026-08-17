@@ -1,4 +1,4 @@
-# SubOrganizer — Android
+# Sub Planner — Android
 
 Native Kotlin + Jetpack Compose app, same Supabase project/database as the web app
 (`suborganizer-next`) and the browser extension. Package: `com.suborganizer.android`.
